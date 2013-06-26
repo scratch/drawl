@@ -3,3 +3,9 @@ Javascript based web-crawler. Broad requirements
 0. Sites will be provided in CSV format, first column will be the Company site URL.
 1. Determine if site is built in Drupal.
 2. (Later) check if site is hosted in one of bigger cloud server providers like AWS, Pantheon, Bluehost, etc.
+
+
+link:
+
+http://speckyboy.com/2012/10/30/getting-to-grips-with-the-html5-file-api-2/
+http://www.briangrinstead.com/blog/filereaderjs
