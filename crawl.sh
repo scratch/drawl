@@ -17,15 +17,17 @@
 #
 #
 function HostingProviderInfo() {
-    dig $1 > /tmp/xx
+    host=`echo $1 | sed -e 's/http:\/\///; s/\/.*//; s/www\.//'`
+    printf "Traceroute on: %s \n" $host
+    dig $host > /tmp/xx
     grep -iw --only-matching -m 1 -f  webhosting.csv  /tmp/xx
     if [ $? != 0 ]
     then
-	traceroute $1 > /tmp/xx
+	traceroute -m 16 $host > /tmp/xx
 	grep -iw --only-matching -m 1 -f  webhosting.csv  /tmp/xx
     fi
 
-    return $?;
+    return $?
 }
 
 
@@ -36,7 +38,7 @@ do
     #num=`cat xx |grep -i drupal | wc -l`
     #num=`curl -sIL drupal.org |grep -i drupal | wc -l`
 
-    printf "Checking site: %s -- " $i
+    printf "%s, " $i
     curl -sL $i -D /tmp/header.log > /tmp/full.html
 
     # TODO: 
@@ -44,17 +46,21 @@ do
     hdrhasdrupal=`grep -i drupal /tmp/header.log | wc -l`
     if (( $hdrhasdrupal > 0 ))
     then
+	isDrupal='Drupal Site\n'
 	printf "Drupal site\n"
 	HostingProviderInfo $i
     else
-	printf "possily other site ..."
+	#printf "possibly other site ..."
 	numdrupaldirs=`grep "sites.default" /tmp/full.html | wc -l`
 	if (( $numdrupaldirs > 0 ))
 	then
 	    printf "Contains Drupal Dir structures; Drupal site\n"
+	    isDrupal='drupal site'
 	    HostingProviderInfo $i
 	else
-	    printf " other site\n"
+	    printf "non-drupal site\n"
+	    isDrupal='NOT Drupal'
+	    HostingProviderInfo $i
 	fi
     fi
 done
